@@ -1,6 +1,6 @@
 # Website Health Checker
 
-A full-stack Flask web app that checks a website's SSL certificate expiry, security headers, and response time — with user authentication and a live dashboard to track check history.
+A full-stack Flask web app that checks a website's SSL certificate expiry, security headers, and response time with user authentication and a live dashboard to track check history.
 
 **Live demo:** https://webhealth-app-960351805264.asia-south1.run.app
 
