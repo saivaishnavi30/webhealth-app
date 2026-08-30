@@ -55,7 +55,7 @@ Building this project took me through the full path from a bare Python script to
 ## Screenshots
 
 **Terminal — successful deployment to Cloud Run**
-Shows the app being deployed via `gcloud run deploy`, confirming it's live and serving traffic.
+Shows the app being deployed via `gcloud run deploy`.
 
 ![Deploy success](1.jpeg)
 
