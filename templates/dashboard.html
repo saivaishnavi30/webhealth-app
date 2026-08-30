@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - Website Health Checker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .topbar {
+            max-width: 800px;
+            margin: 0 auto 24px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .topbar h1 {
+            font-size: 20px;
+        }
+
+        .topbar a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .topbar a:hover {
+            color: white;
+        }
+
+        .checker-card {
+            max-width: 800px;
+            margin: 0 auto 30px auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .checker-card h2 {
+            color: #1e293b;
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+
+        .check-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .check-form input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .check-form input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .check-form button {
+            padding: 12px 24px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .check-form button:hover {
+            background: #2563eb;
+        }
+
+        #checkMessage {
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        .section-title {
+            max-width: 800px;
+            margin: 0 auto 12px auto;
+            color: #94a3b8;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        #currentResultWrap {
+            max-width: 800px;
+            margin: 0 auto 30px auto;
+        }
+
+        .history-toggle {
+            max-width: 800px;
+            margin: 0 auto 12px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-toggle button {
+            background: transparent;
+            border: 1px solid #475569;
+            color: #cbd5e1;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .history-toggle button:hover {
+            background: #334155;
+        }
+
+        #historyList {
+            max-width: 800px;
+            margin: 0 auto;
+            display: none;
+        }
+
+        #historyList.open {
+            display: block;
+        }
+
+        .result-card {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .result-card .url {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 15px;
+            margin-bottom: 4px;
+            word-break: break-all;
+        }
+
+        .result-card .timestamp {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 14px;
+        }
+
+        .stats-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stat-box {
+            background: #f1f5f9;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #334155;
+        }
+
+        .stat-box.good {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .stat-box.bad {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #64748b;
+            padding: 30px;
+            font-size: 14px;
+            background: #ffffff;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <h1>Website Health Checker</h1>
+        <a href="/logout">Logout</a>
+    </div>
+
+    <div class="checker-card">
+        <h2>Welcome, {{ user_name }} 👋</h2>
+        <form id="checkForm" class="check-form">
+            <input type="text" id="urlInput" placeholder="https://example.com" required>
+            <button type="submit">Check</button>
+        </form>
+        <p id="checkMessage"></p>
+    </div>
+
+    <p class="section-title">Current result</p>
+    <div id="currentResultWrap">
+        <p class="empty-state" id="currentEmptyState">Enter a URL above to see its health check here.</p>
+    </div>
+
+    <div class="history-toggle">
+        <p class="section-title" style="margin:0;">Past checks</p>
+        <button id="historyBtn" type="button">View History</button>
+    </div>
+    <div id="historyList">
+        {% if history|length == 0 %}
+        <p class="empty-state">No past checks yet.</p>
+        {% endif %}
+
+        {% for item in history %}
+        <div class="result-card">
+            <div class="url">{{ item.url }}</div>
+            <div class="timestamp">{{ item.checked_at.strftime('%d %b %Y, %I:%M %p') }}</div>
+            <div class="stats-row">
+                <div class="stat-box">⏱ {{ item.response_time_ms }} ms</div>
+                <div class="stat-box {{ 'good' if item.ssl_days_left and item.ssl_days_left > 0 else 'bad' }}">🔒 SSL: {{ item.ssl_days_left }} days left</div>
+                <div class="stat-box {{ 'good' if item.hsts else 'bad' }}">HSTS {{ '✅' if item.hsts else '❌' }}</div>
+                <div class="stat-box {{ 'good' if item.x_frame_options else 'bad' }}">X-Frame {{ '✅' if item.x_frame_options else '❌' }}</div>
+                <div class="stat-box {{ 'good' if item.csp else 'bad' }}">CSP {{ '✅' if item.csp else '❌' }}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        document.getElementById('checkForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const url = document.getElementById('urlInput').value;
+            const msg = document.getElementById('checkMessage');
+            msg.style.color = '#94a3b8';
+            msg.innerText = 'Checking...';
+
+            const res = await fetch('/check-and-save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                msg.style.color = 'red';
+                msg.innerText = data.error || 'Something went wrong';
+                return;
+            }
+
+            msg.style.color = 'lightgreen';
+            msg.innerText = 'Done!';
+
+            const resultWrap = document.getElementById('currentResultWrap');
+            resultWrap.innerHTML = `
+                <div class="result-card">
+                    <div class="url">${data.url}</div>
+                    <div class="timestamp">${data.checked_at}</div>
+                    <div class="stats-row">
+                        <div class="stat-box">⏱ ${data.response_time_ms} ms</div>
+                        <div class="stat-box ${data.ssl_days_left > 0 ? 'good' : 'bad'}">🔒 SSL: ${data.ssl_days_left} days left</div>
+                        <div class="stat-box ${data.hsts ? 'good' : 'bad'}">HSTS ${data.hsts ? '✅' : '❌'}</div>
+                        <div class="stat-box ${data.x_frame_options ? 'good' : 'bad'}">X-Frame ${data.x_frame_options ? '✅' : '❌'}</div>
+                        <div class="stat-box ${data.csp ? 'good' : 'bad'}">CSP ${data.csp ? '✅' : '❌'}</div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('urlInput').value = '';
+        });
+
+        document.getElementById('historyBtn').addEventListener('click', function() {
+            const list = document.getElementById('historyList');
+            const btn = document.getElementById('historyBtn');
+            list.classList.toggle('open');
+            btn.innerText = list.classList.contains('open') ? 'Hide History' : 'View History';
+        });
+    </script>
+</body>
+</html>
