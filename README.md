@@ -59,7 +59,6 @@ Shows the app being deployed via `gcloud run deploy`.
 
 ![Deploy success](1.jpeg)
 
-**Live URL running in the browser**
 The deployed Cloud Run URL, proving the app is publicly hosted and not running on localhost.
 
 ![Live URL](2.jpeg)
