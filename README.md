@@ -38,7 +38,7 @@ pip install -r requirements.txt
 flask run
 ```
 
-Visit `http://127.0.0.1:5000/signup-page` to get started.
+Visit: `http://127.0.0.1:5000/signup-page`
 
 ## Running with Docker
 
@@ -49,9 +49,6 @@ docker run -p 8080:8080 webhealth-app
 
 ## What I Learned
 
-Building this project took me through the full path from a bare Python script to a deployed cloud product — writing backend logic, adding a database and authentication, building a frontend that talks to the backend via JavaScript, containerizing the app with Docker, and deploying it to Google Cloud Run (including debugging IAM permission issues along the way).
+Building this project took me through the full path from a bare Python script to a deployed cloud product — writing backend logic, adding a database and authentication, building a frontend that talks to the backend via JavaScript, containerizing the app with Docker, and deploying it to Google Cloud Run.
 
-## Author
 
-Vaishnavi — CSE student, aspiring DevOps Engineer
-GitHub: [@saivaishnavi30](https://github.com/saivaishnavi30)
